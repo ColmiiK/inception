@@ -2,7 +2,13 @@ version: "3.8"
 
 services:
   nginx:
+    volumes:
+      - ./public:/var/www/public/
+      - ./nginx/conf.d:/etc/nginx/conf.d/
+      - /home/${USER}/projects/inception/srcs/requirements/tools:/etc/nginx/ssl/
+    restart: unless-stopped
     container_name: nginx
     build: requirements/nginx/.
     ports:
       - "8080:80"
+      - "443:443"
