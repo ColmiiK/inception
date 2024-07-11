@@ -1,6 +1,10 @@
 FROM debian:bullseye
 
-ARG DB_NAME DB_ADMIN DB_ADMIN_PASS DB_USER DB_USER_PASS
+ARG DB_NAME
+ARG DB_ADMIN
+ARG DB_ADMIN_PASS
+ARG DB_USER
+ARG DB_USER_PASS
 
 RUN apt-get update && apt-get install -y \
     mariadb-server mariadb-client \
