@@ -6,10 +6,12 @@ services:
       context: .
       dockerfile: requirements/nginx/Dockerfile
     container_name: nginx
-    #   depends_on:
-    #     - wordpress
+    depends_on:
+      - wordpress
     ports:
       - "443:443"
+    networks:
+      - inception
     volumes:
       - ./requirements/nginx/conf/:/etc/nginx/http.d/
       - ./requirements/nginx/tools/:/etc/nginx/ssl/
@@ -31,6 +33,8 @@ services:
     container_name: mariadb
     ports:
       - "3306:3306"
+    networks:
+      - inception
     volumes:
       - db-volume:/var/lib/mysql
     restart: always
@@ -50,6 +54,8 @@ services:
     container_name: wordpress
     depends_on:
       - mariadb
+    networks:
+      - inception
     volumes:
       - wp-volume:/var/www/
     restart: always
