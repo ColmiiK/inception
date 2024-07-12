@@ -20,8 +20,7 @@ services:
     build:
       context: .
       dockerfile: requirements/mariadb/Dockerfile
-    env_file:
-      - .env
+    env_file: .env
     environment:
       DB_NAME: ${DB_NAME}
       DB_ADMIN: ${DB_ADMIN}
@@ -35,6 +34,38 @@ services:
     volumes:
       - db-volume:/var/lib/mysql
     restart: always
+  
+  wordpress:
+    build:
+      context: .
+      dockerfile: requirements/wordpress/Dockerfile
+    env_file: .env
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_ADMIN: ${DB_ADMIN}
+      DB_ADMIN_PASS: ${DB_ADMIN_PASS}
+      DB_USER: ${DB_USER}
+      DB_USER_PASS: ${DB_USER_PASS}
+      DB_ROOT: ${DB_ROOT}
+    container_name: wordpress
+    depends_on:
+      - mariadb
+    volumes:
+      - wp-volume:/var/www/
+    restart: always
 
 volumes:
   db-volume:
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/${USER}/data/mariadb
+  wp-volume:
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/${USER}/data/wordpress
+
+networks:
+  inception:
+    driver: bridge
