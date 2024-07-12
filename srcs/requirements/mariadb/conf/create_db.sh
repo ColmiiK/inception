@@ -1,12 +1,4 @@
 #!bin/sh
-
-echo "DB_ROOT: ${DB_ROOT}"
-echo "DB_NAME: ${DB_NAME}"
-echo "DB_USER: ${DB_USER}"
-echo "DB_USER_PASS: ${DB_USER_PASS}"
-echo "DB_ADMIN: ${DB_ADMIN}"
-echo "DB_ADMIN_PASS: ${DB_ADMIN_PASS}"
-
 if [ ! -d "/var/lib/mysql/mysql" ]; then
   chown -R mysql:mysql /var/lib/mysql
 

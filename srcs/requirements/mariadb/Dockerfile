@@ -1,5 +1,6 @@
 FROM debian:bullseye
 
+ARG DB_ROOT
 ARG DB_NAME
 ARG DB_ADMIN
 ARG DB_ADMIN_PASS
@@ -27,7 +28,7 @@ RUN mysql_install_db --user=mysql --datadir=/var/lib/mysql
 EXPOSE 3306
 
 COPY requirements/mariadb/conf/create_db.sh .
-RUN sh create_db.sh
+RUN sh create_db.sh && rm create_db.sh
 
 USER mysql
 # COPY tools/db.sh .
