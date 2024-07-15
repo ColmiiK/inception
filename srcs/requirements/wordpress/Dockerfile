@@ -1,8 +1,8 @@
 FROM debian:bullseye
 
-ARG DB_NAME \
-    DB_USER \
-    DB_PASS
+ARG DB_NAME
+ARG DB_USER
+ARG DB_USER_PASS
 
 RUN mkdir -p /run/php/
 
@@ -21,8 +21,8 @@ RUN apt-get update && apt-get install -y \
     php7.4-redis \
     wget \
     unzip
-
-RUN sed -i "s|listen = 127.0.0.1:9000|listen = 9000|g" /etc/php/7.4/fpm/pool.d/www.conf && \
+# listen = /run/php/php7.4-fpm.sock
+RUN sed -i "s|listen = /run/php/php7.4-fpm.sock|listen = 9000|g" /etc/php/7.4/fpm/pool.d/www.conf && \
     sed -i "s|;listen.owner = nobody|listen.owner = nobody|g" /etc/php/7.4/fpm/pool.d/www.conf && \
     sed -i "s|;listen.group = nobody|listen.group = nobody|g" /etc/php/7.4/fpm/pool.d/www.conf
 
@@ -34,7 +34,7 @@ RUN wget https://wordpress.org/latest.zip && unzip latest.zip && \
 
 COPY requirements/wordpress/conf/wp-config-create.sh .
 
-RUN sh wp-config-create.sh && rm wp-config-create.sh && chmod -R 0777 wp-content/
+RUN sh wp-config-create.sh && chmod -R 0777 wp-content/
 
 CMD ["/usr/sbin/php-fpm7.4", "-F"]
 
