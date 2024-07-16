@@ -1,6 +1,5 @@
 FROM debian:bullseye
 
-ARG DB_ROOT
 ARG DB_NAME
 ARG DB_ADMIN
 ARG DB_ADMIN_PASS
@@ -20,7 +19,7 @@ RUN { \
       echo 'skip-host-cache'; \
       echo 'skip-name-resolve'; \
       echo 'bind-address=0.0.0.0'; \
-    } | tee /etc/my.cnf.d/docker.cnf \
+    } | tee /etc/mysql/conf.d/docker.cnf \
     && echo "skip-networking = 0" >> /etc/my.cnf.d/mariadb-server.cnf
 
 RUN mysql_install_db --user=mysql --datadir=/var/lib/mysql
@@ -33,5 +32,5 @@ RUN sh create_db.sh && rm create_db.sh
 USER mysql
 # COPY tools/db.sh .
 # ENTRYPOINT ["sh", "db.sh"]
-CMD ["mysqld", "--skip-log-error"]
+CMD ["mysqld", "--defaults-extra-file=/etc/mysql/conf.d/docker.cnf", "--skip-log-error"]
 
