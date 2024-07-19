@@ -7,12 +7,11 @@ ARG DB_NAME \
 RUN apt-get update && apt-get install -y \
   nginx \
   curl \
+  openssl \
   && apt-get clean && rm -rf var/lib/apt/lists/*
 
 COPY requirements/nginx/conf/nginx.conf /etc/nginx/nginx.conf
-
 COPY requirements/nginx/html /usr/share/nginx/html
-
 COPY requirements/nginx/tools /etc/nginx/ssl
 
 EXPOSE 443

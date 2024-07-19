@@ -3,10 +3,12 @@ name = inception
 
 all:
 	@bash srcs/requirements/wordpress/tools/create_dir.sh
+	@bash srcs/requirements/nginx/tools/create_crt.sh
 	@docker compose -f ./srcs/docker-compose.yml up -d
 
 build:
 	@bash srcs/requirements/wordpress/tools/create_dir.sh
+	@bash srcs/requirements/nginx/tools/create_crt.sh
 	@docker compose -f ./srcs/docker-compose.yml build
 
 down:
