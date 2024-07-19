@@ -3,9 +3,9 @@
 if [ ! -f "/var/www/wp-config.php" ]; then
   cat <<EOF >/var/www/wp-config.php
 <?php
-define( 'DB_NAME', 'wordpress' );
-define( 'DB_USER', 'alvega-g' );
-define( 'DB_PASSWORD', 'alvega-g1234' );
+define( 'DB_NAME', '${DB_NAME}' );
+define( 'DB_USER', '${DB_USER}' );
+define( 'DB_PASSWORD', '${DB_USER_PASS}' );
 define( 'DB_HOST', 'mariadb' );
 define( 'DB_CHARSET', 'utf8' );
 define( 'DB_COLLATE', '' );

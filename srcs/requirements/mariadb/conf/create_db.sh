@@ -1,45 +1,72 @@
-#!/bin/bash
+#!/bin/sh
+set -e
 
-# Check if MySQL data directory exists
+# Debugging info
+echo "Starting database initialization script"
+echo "Environment Variables:"
+echo "DB_NAME=${DB_NAME}"
+echo "DB_ADMIN_PASS=${DB_ADMIN_PASS}"
+echo "DB_USER=${DB_USER}"
+echo "DB_USER_PASS=${DB_USER_PASS}"
+
+# Check if MySQL data directory exists and initialize if not
 if [ ! -d "/var/lib/mysql/mysql" ]; then
+  echo "MySQL data directory not found. Initializing..."
   chown -R mysql:mysql /var/lib/mysql
 
   # Initialize MySQL data directory
   mysql_install_db --basedir=/usr --datadir=/var/lib/mysql --user=mysql --rpm
+else
+  echo "MySQL data directory already exists. Skipping initialization."
+fi
 
-  # Create a temporary file for the SQL script
-  tfile=$(mktemp)
-  if [ ! -f "$tfile" ]; then
-    echo "Failed to create temporary file"
-    exit 1
-  fi
+# Stop MySQL/MariaDB server if running
+if pgrep mysqld; then
+  echo "Stopping MySQL/MariaDB server..."
+  mysqladmin -u root -p${DB_ADMIN_PASS} shutdown
+fi
 
-  # Generate the SQL script
-  cat <<EOF >$tfile
+# Check if the WordPress database is already created
+if [ ! -d "/var/lib/mysql/${DB_NAME}" ]; then
+  echo "Creating ${DB_NAME} database and user..."
+
+  cat <<EOF >create_db.sql
 USE mysql;
 FLUSH PRIVILEGES;
-DELETE FROM mysql.user WHERE User='';
+DELETE FROM mysql.user WHERE User='' OR User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
 DROP DATABASE IF EXISTS test;
 DELETE FROM mysql.db WHERE Db='test';
-DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
-ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT}';
-CREATE DATABASE ${DB_NAME} DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_USER_PASS}';
-GRANT SELECT, INSERT, UPDATE, DELETE ON ${DB_NAME}.* TO '${DB_USER}'@'%';
-CREATE USER IF NOT EXISTS '${DB_ADMIN}'@'%' IDENTIFIED BY '${DB_ADMIN_PASS}';
-GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_ADMIN}'@'%';
+
+-- Ensure root user exists before altering
+CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED BY '${DB_ADMIN_PASS}';
+ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ADMIN_PASS}';
+
+CREATE DATABASE IF NOT EXISTS ${DB_NAME};
+CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_USER_PASS}';
+GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%';
+GRANT CREATE, ALTER, DROP, INDEX, LOCK TABLES ON ${DB_NAME}.* TO '${DB_USER}'@'%';
 FLUSH PRIVILEGES;
 EOF
 
-  # Start MySQL server in the background
-  mysqld_safe --datadir=/var/lib/mysql &
+  # Display the generated SQL script for debugging
+  echo "Generated SQL script:"
+  cat create_db.sql
 
-  # Wait for MySQL server to start (sleep for a few seconds)
-  sleep 10
+  # Start MySQL/MariaDB and execute SQL commands
+  mysqld --user=mysql --bootstrap <create_db.sql
 
-  # Execute the SQL script
-  /usr/bin/mysql --user=root --password=${DB_ROOT} <$tfile
+  # Check if mysqld startup was successful
+  if [ $? -ne 0 ]; then
+    echo "Failed to start MySQL/MariaDB and execute initialization SQL."
+    exit 1
+  fi
 
-  # Clean up the temporary file
-  rm -f $tfile
+  echo "${DB_NAME} database and user created successfully."
+
+else
+  echo "${DB_NAME} database already exists. Skipping creation."
 fi
+
+# Start MySQL/MariaDB server again
+echo "Starting MySQL/MariaDB server..."
+mysqld_safe --user=mysql &
