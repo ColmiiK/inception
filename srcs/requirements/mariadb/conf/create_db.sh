@@ -1,14 +1,5 @@
 #!/bin/sh
 set -e
-
-# Debugging info
-echo "Starting database initialization script"
-echo "Environment Variables:"
-echo "DB_NAME=${DB_NAME}"
-echo "DB_ADMIN_PASS=${DB_ADMIN_PASS}"
-echo "DB_USER=${DB_USER}"
-echo "DB_USER_PASS=${DB_USER_PASS}"
-
 # Check if MySQL data directory exists and initialize if not
 if [ ! -d "/var/lib/mysql/mysql" ]; then
   echo "MySQL data directory not found. Initializing..."
@@ -45,10 +36,6 @@ GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'%';
 GRANT CREATE, ALTER, DROP, INDEX, LOCK TABLES ON ${DB_NAME}.* TO '${DB_USER}'@'%';
 FLUSH PRIVILEGES;
 EOF
-
-  # Display the generated SQL script for debugging
-  echo "Generated SQL script:"
-  cat create_db.sql
 
   # Start MySQL/MariaDB and execute SQL commands
   mysqld --user=mysql --bootstrap <create_db.sql

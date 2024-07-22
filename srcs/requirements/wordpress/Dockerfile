@@ -19,6 +19,9 @@ RUN apt-get update && apt-get install -y \
     php7.4-xml \
     php7.4-zip \
     php7.4-redis \
+    php7.4-gd \
+    php7.4-intl \
+    imagemagick \
     wget \
     unzip
 # listen = /run/php/php7.4-fpm.sock
