@@ -75,8 +75,8 @@ services:
       context: .
       dockerfile: requirements/bonus/redis/Dockerfile
     container_name: redis
-    ports:
-      - "6379:6379"
+      #ports:
+      #- "6379:6379"
     networks:
       - inception
     restart: always

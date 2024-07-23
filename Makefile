@@ -16,8 +16,6 @@ down:
 
 clean: down
 	@docker system prune -a
-	@sudo rm -rf ~/data/wordpress/*
-	@sudo rm -rf ~/data/mariadb/*
 
 fclean:
 	@docker stop $$(docker ps -qa)
