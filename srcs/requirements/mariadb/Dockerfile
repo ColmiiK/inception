@@ -1,17 +1,14 @@
 FROM debian:bullseye
 
-# Environment variables for database setup
 ARG DB_NAME
 ARG DB_USER
 ARG DB_USER_PASS
 ARG DB_ADMIN_PASS
 
-# Install MariaDB server and client
 RUN apt-get update && apt-get install -y \
     mariadb-server mariadb-client \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Prepare MariaDB configuration
 RUN mkdir -p /var/run/mysqld /etc/my.cnf.d/ \
     && chmod 777 /var/run/mysqld \
     && { \
@@ -22,15 +19,10 @@ RUN mkdir -p /var/run/mysqld /etc/my.cnf.d/ \
        } | tee /etc/mysql/conf.d/docker.cnf \
     && echo "skip-networking = 0" >> /etc/my.cnf.d/mariadb-server.cnf
 
-# Initialize MySQL data directory
 RUN mysql_install_db --user=mysql --datadir=/var/lib/mysql
 
-# Expose MySQL port
 EXPOSE 3306
 
-# Copy the database initialization script
 COPY requirements/mariadb/conf/create_db.sh /create_db.sh
 
-# Run the initialization script and start MySQL server
 CMD ["sh", "-c", "sh /create_db.sh && exec mysqld --defaults-extra-file=/etc/mysql/conf.d/docker.cnf --skip-log-error"]
-
