@@ -1,6 +1,7 @@
 FROM debian:bullseye
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update
+RUN apt-get install -y \
     lsb-release \
     wget \
     apt-transport-https \
@@ -19,6 +20,7 @@ RUN apt-get update && apt-get install -y \
     php7.4-redis \
     php7.4-gd \
     php7.4-intl
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www
 

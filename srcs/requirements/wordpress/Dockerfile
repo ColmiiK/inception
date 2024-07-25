@@ -1,12 +1,14 @@
 FROM debian:bullseye
 
-ARG DB_NAME
-ARG DB_USER
-ARG DB_USER_PASS
+ARG DB_NAME \
+    DB_USER \
+    DB_USER_PASS
 
 RUN mkdir -p /run/php/
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update
+
+RUN apt-get install -y \
     php7.4 \
     php7.4-fpm \
     php7.4-mysqli \
@@ -24,7 +26,9 @@ RUN apt-get update && apt-get install -y \
     imagemagick \
     wget \
     unzip
-# listen = /run/php/php7.4-fpm.sock
+
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
 RUN sed -i "s|listen = /run/php/php7.4-fpm.sock|listen = 9000|g" /etc/php/7.4/fpm/pool.d/www.conf && \
     sed -i "s|;listen.owner = nobody|listen.owner = nobody|g" /etc/php/7.4/fpm/pool.d/www.conf && \
     sed -i "s|;listen.group = nobody|listen.group = nobody|g" /etc/php/7.4/fpm/pool.d/www.conf
@@ -40,5 +44,3 @@ COPY requirements/wordpress/conf/wp-config-create.sh .
 RUN sh wp-config-create.sh && chmod -R 0777 wp-content/
 
 CMD ["/usr/sbin/php-fpm7.4", "-F"]
-
-

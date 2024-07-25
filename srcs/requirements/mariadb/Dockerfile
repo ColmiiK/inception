@@ -1,13 +1,16 @@
 FROM debian:bullseye
 
-ARG DB_NAME
-ARG DB_USER
-ARG DB_USER_PASS
-ARG DB_ADMIN_PASS
+ARG DB_NAME \
+    DB_USER \
+    DB_USER_PASS \
+    DB_ADMIN_PASS
 
-RUN apt-get update && apt-get install -y \
-    mariadb-server mariadb-client \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+
+RUN apt-get install -y \
+    mariadb-server mariadb-client
+
+RUN apt-get clean && rm -rf var/lib/apt/lists/*
 
 RUN mkdir -p /var/run/mysqld /etc/my.cnf.d/ \
     && chmod 777 /var/run/mysqld \
