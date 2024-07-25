@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ ! -d "/home/${USER}/data" ]; then
-  mkdir ~/data
-  mkdir ~/data/mariadb
-  mkdir ~/data/wordpress
+if [ ! -d "/home/alvega-g/data" ]; then
+  mkdir /home/alvega-g/data
+  mkdir /home/alvega-g/data/mariadb
+  mkdir /home/alvega-g/data/wordpress
 fi
