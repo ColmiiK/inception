@@ -2,7 +2,7 @@ name = inception
 
 
 all:
-	@bash srcs/requirements/wordpress/tools/create_dir.sh
+	@sudo bash srcs/requirements/wordpress/tools/create_dir.sh
 	@bash srcs/requirements/nginx/tools/create_crt.sh
 	@docker compose -f ./srcs/docker-compose.yml up -d
 
@@ -13,7 +13,7 @@ portainerdown:
 	@docker stop portainer
 
 build:
-	@bash srcs/requirements/wordpress/tools/create_dir.sh
+	@sudo bash srcs/requirements/wordpress/tools/create_dir.sh
 	@bash srcs/requirements/nginx/tools/create_crt.sh
 	@docker compose -f ./srcs/docker-compose.yml build
 
@@ -28,7 +28,7 @@ fclean:
 	@docker system prune --all --force --volumes
 	@docker network prune --force
 	@docker volume prune --force
-	@sudo rm -rf /home/alvega-g/data/wordpress/*
-	@sudo rm -rf /home/alvega-g/data/mariadb/*
+	@sudo rm -rf /home/alvega-g/data/wordpress
+	@sudo rm -rf /home/alvega-g/data/mariadb
 
 .PHONY: all build down re clean fclean

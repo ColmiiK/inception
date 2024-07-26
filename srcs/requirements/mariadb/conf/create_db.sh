@@ -1,15 +1,11 @@
 #!/bin/sh
 set -e
 # Check if MySQL data directory exists and initialize if not
-if [ ! -d "/var/lib/mysql/mysql" ]; then
-  echo "MySQL data directory not found. Initializing..."
-  chown -R mysql:mysql /var/lib/mysql
+echo "MySQL data directory not found. Initializing..."
+chown -R mysql:mysql /var/lib/mysql
 
   # Initialize MySQL data directory
-  mysql_install_db --basedir=/usr --datadir=/var/lib/mysql --user=mysql --rpm
-else
-  echo "MySQL data directory already exists. Skipping initialization."
-fi
+mysql_install_db --basedir=/usr --datadir=/var/lib/mysql --user=mysql --rpm
 
 # Stop MySQL/MariaDB server if running
 if pgrep mysqld; then

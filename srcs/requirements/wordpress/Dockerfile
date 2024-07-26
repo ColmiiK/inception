@@ -41,6 +41,10 @@ RUN wget https://wordpress.org/latest.zip && unzip latest.zip && \
 
 COPY requirements/wordpress/conf/wp-config-create.sh .
 
-RUN sh wp-config-create.sh && chmod -R 0777 wp-content/
+RUN sh wp-config-create.sh
+
+RUN mkdir -p /var/www/wp-content/uploads && \
+    chown -R www-data:www-data /var/www/wp-content && \
+    chmod -R 755 /var/www/wp-content
 
 CMD ["/usr/sbin/php-fpm7.4", "-F"]
